@@ -6,11 +6,6 @@ import io
 from gtts import gTTS
 import os
 
-torch.classes.__path__ = [os.path.join(torch.__path__[0], torch.classes.__file__)] 
-
-# or simply:
-torch.classes.__path__ = []
-
 # ================================
 # إعداد مفتاح Gemini API وتحميل النموذج
 # ================================
