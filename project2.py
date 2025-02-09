@@ -25,7 +25,7 @@ if audio_file is not None:
     st.info("جارٍ تحويل الصوت إلى نص...")
     
     # استخدام Whisper لتحويل الصوت إلى نص
-    result = model.transcribe(tmp_path)
+    result = model.transcribe(tmp_path,fp16=False)
     transcription = result["text"].strip()
 
     st.subheader("النص المحول:")
