@@ -1,32 +1,28 @@
+import sounddevice as sd
 import streamlit as st
-import io
-from pydub import AudioSegment
+from scipy.io.wavfile import write
+import numpy as np
 
-# التأكد من تثبيت مكتبة pydub و ffmpeg قبل الاستخدام:
-# pip install pydub
+st.title("🎤 تسجيل الصوت وحفظه")
 
-st.title("🎤 تسجيل الصوت وتشغيله")
+# إعداد متغيرات للتسجيل
+duration = st.slider("حدد مدة التسجيل (بالثواني):", min_value=1, max_value=10, value=5)
+sample_rate = 44100  # معدل العينة (عدد العينات في الثانية)
 
-# تسجيل الصوت باستخدام st.audio_input
-audio_file = st.audio_input("اضغط للتسجيل:")
+if st.button("🔴 بدء التسجيل"):
+    st.info("جارٍ التسجيل... تحدث الآن 🎙️")
 
-if audio_file is not None:
-    # قراءة الملف الصوتي من المستخدم
-    audio_bytes = audio_file.read()
-    
-    # عرض الصوت مباشرة للمستخدم
-    st.audio(audio_bytes, format="audio/wav")
-
-    # تحويل الصوت باستخدام pydub إذا لزم الأمر
+    # تسجيل الصوت
     try:
-        audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="wav")
-        audio.export("recorded_audio.wav", format="wav")
-        st.success("✅ تم حفظ الملف الصوتي بنجاح!")
-    except Exception as e:
-        st.error(f"⚠️ خطأ أثناء حفظ الملف الصوتي: {e}")
+        recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=2, dtype="int16")
+        sd.wait()  # انتظر حتى انتهاء التسجيل
+        st.success("✅ تم التسجيل!")
 
-    # تشغيل الصوت المحفوظ للتأكد
-    try:
+        # حفظ الملف بصيغة WAV
+        write("recorded_audio.wav", sample_rate, recording)
+        st.success("✅ تم حفظ الملف باسم recorded_audio.wav!")
+
+        # تشغيل الملف المحفوظ
         st.audio("recorded_audio.wav", format="audio/wav")
     except Exception as e:
-        st.error(f"⚠️ خطأ أثناء تشغيل الملف المحفوظ: {e}")
+        st.error(f"⚠️ حدث خطأ أثناء التسجيل: {e}")
