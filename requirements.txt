@@ -5,3 +5,4 @@ gTTS
 librosa
 soundfile
 pydub
+sounddevice
