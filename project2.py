@@ -5,16 +5,12 @@ import google.generativeai as genai
 import io
 from gtts import gTTS
 import os
+import librosa
 
-# ================================
 # إعداد مفتاح Gemini API وتحميل النموذج
-# ================================
 genai.configure(api_key="AIzaSyBROCzAVfRpwNJuj6urgfcyfWb86os9h6E")
 gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
-# ================================
-# واجهة المستخدم الرئيسية
-# ================================
 st.title("تسجيل الصوت وتحويله إلى نص وإرسال الرد")
 st.write("سجل رسالة صوتية، وسيتم تحويلها إلى نص باستخدام Whisper ثم إرسالها إلى Gemini للحصول على رد. بعد ذلك، يتم تحويل الرد إلى صوت.")
 
@@ -35,8 +31,11 @@ if recorder_audio:
     # تحميل نموذج Whisper (اختر النموذج المناسب: base, small, medium, ...)
     model = whisper.load_model("base")
 
-    # تحويل الملف الصوتي إلى نص
-    result = model.transcribe(temp_file_path)
+    # تحميل الملف الصوتي باستخدام librosa وتحويله إلى معدل 16kHz
+    audio_data, sr = librosa.load(temp_file_path, sr=16000)
+
+    # تمرير المصفوفة الناتجة إلى نموذج Whisper
+    result = model.transcribe(audio_data)
     text = result["text"].strip()
 
     st.subheader("النص المحول:")
