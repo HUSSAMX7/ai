@@ -28,7 +28,7 @@ if recorder_audio:
     # تحميل نموذج Whisper (اختر النموذج المناسب: base, small, medium, ...)
     model = whisper.load_model("base")
     # تحويل الملف الصوتي إلى نص
-    result = model.transcribe(temp_file_path)
+    result = model.transcribe(temp_file_path,fp16=False)
     text = result["text"].strip()
     st.subheader("النص المحول:")
     st.write(text)
