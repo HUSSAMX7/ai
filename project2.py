@@ -1,5 +1,9 @@
 import streamlit as st
 import io
+from pydub import AudioSegment
+
+# التأكد من تثبيت مكتبة pydub و ffmpeg قبل الاستخدام:
+# pip install pydub
 
 st.title("🎤 تسجيل الصوت وتشغيله")
 
@@ -7,17 +11,22 @@ st.title("🎤 تسجيل الصوت وتشغيله")
 audio_file = st.audio_input("اضغط للتسجيل:")
 
 if audio_file is not None:
-    # قراءة الصوت من الملف المسجل
+    # قراءة الملف الصوتي من المستخدم
     audio_bytes = audio_file.read()
-
-    # عرض الصوت مباشرة بعد التسجيل
+    
+    # عرض الصوت مباشرة للمستخدم
     st.audio(audio_bytes, format="audio/wav")
 
-    # حفظ الصوت إلى ملف محلي
-    with open("recorded_audio.wav", "wb") as f:
-        f.write(audio_bytes)
+    # تحويل الصوت باستخدام pydub إذا لزم الأمر
+    try:
+        audio = AudioSegment.from_file(io.BytesIO(audio_bytes), format="wav")
+        audio.export("recorded_audio.wav", format="wav")
+        st.success("✅ تم حفظ الملف الصوتي بنجاح!")
+    except Exception as e:
+        st.error(f"⚠️ خطأ أثناء حفظ الملف الصوتي: {e}")
 
-    st.success("✅ تم حفظ الصوت بنجاح!")
-
-    # عرض الصوت المحفوظ للتأكد
-    st.audio("recorded_audio.wav", format="audio/wav")
+    # تشغيل الصوت المحفوظ للتأكد
+    try:
+        st.audio("recorded_audio.wav", format="audio/wav")
+    except Exception as e:
+        st.error(f"⚠️ خطأ أثناء تشغيل الملف المحفوظ: {e}")
