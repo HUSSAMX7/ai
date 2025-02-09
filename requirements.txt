@@ -2,3 +2,5 @@ streamlit
 openai-whisper
 google-generativeai
 gTTS
+librosa
+soundfile
